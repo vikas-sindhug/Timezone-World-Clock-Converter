@@ -10,5 +10,11 @@ PRODUCT_NAME = world_clock
 // The application's bundle identifier
 PRODUCT_BUNDLE_IDENTIFIER = com.worldclock.worldClock
 
+// The Widget Extension bundle identifier (prefixed with main app bundle identifier)
+WIDGET_BUNDLE_IDENTIFIER = com.worldclock.worldClock.WorldClockWidget
+
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.worldclock. All rights reserved.
+
+// Apple Developer Team (Set to your 10-character Apple Developer Team ID, or leave empty for automatic local development signing)
+DEVELOPMENT_TEAM = 
