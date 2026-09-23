@@ -1,16 +1,20 @@
 import WidgetKit
 import SwiftUI
+#if canImport(AppIntents)
 import AppIntents
+#endif
 
 /// Primary WorldClock Desktop Widget supporting Small, Medium, and Large sizes with AppIntent configuration
+@available(macOS 14.0, *)
 public struct WorldClockWidget: Widget {
     public static let kind: String = "com.dharampal.worldclock.widget"
+    public let kind: String = "com.dharampal.worldclock.widget"
 
     public init() {}
 
     public var body: some WidgetConfiguration {
         AppIntentConfiguration(
-            kind: Self.kind,
+            kind: kind,
             intent: SelectCityIntent.self,
             provider: WorldClockAppIntentTimelineProvider()
         ) { entry in
@@ -24,14 +28,16 @@ public struct WorldClockWidget: Widget {
 }
 
 /// Multi-City Desktop Widget (Large size) for quick multi-clock comparison
+@available(macOS 11.0, *)
 public struct WorldClockMultiCityWidget: Widget {
     public static let kind: String = "com.dharampal.worldclock.multi_widget"
+    public let kind: String = "com.dharampal.worldclock.multi_widget"
 
     public init() {}
 
     public var body: some WidgetConfiguration {
         StaticConfiguration(
-            kind: Self.kind,
+            kind: kind,
             provider: WorldClockMultiCityTimelineProvider()
         ) { entry in
             MultiWidgetEntryView(entry: entry)

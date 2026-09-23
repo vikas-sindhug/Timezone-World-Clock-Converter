@@ -18,3 +18,6 @@ PRODUCT_COPYRIGHT = Copyright © 2026 com.worldclock. All rights reserved.
 
 // Apple Developer Team (Set to your 10-character Apple Developer Team ID, or leave empty for automatic local development signing)
 DEVELOPMENT_TEAM = 
+
+// macOS deployment target
+MACOSX_DEPLOYMENT_TARGET = 14.0

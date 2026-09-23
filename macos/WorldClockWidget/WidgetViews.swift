@@ -2,7 +2,8 @@ import SwiftUI
 import WidgetKit
 
 // MARK: - Glass Widget Background Modifier
-struct GlassWidgetBackground: ViewModifier {
+public struct GlassWidgetBackground: ViewModifier {
+    public init() {}
     @Environment(\.colorScheme) var colorScheme
 
     func body(content: Content) -> some View {
@@ -41,7 +42,7 @@ struct GlassWidgetBackground: ViewModifier {
 }
 
 extension View {
-    func glassWidgetBackground() -> some View {
+    public func glassWidgetBackground() -> some View {
         self.modifier(GlassWidgetBackground())
     }
 }

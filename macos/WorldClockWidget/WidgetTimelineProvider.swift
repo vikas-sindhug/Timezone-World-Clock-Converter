@@ -23,6 +23,7 @@ public struct WorldClockEntry: TimelineEntry {
 }
 
 // MARK: - AppIntent Timeline Provider for Configurable Single City Widget
+@available(macOS 14.0, *)
 public struct WorldClockAppIntentTimelineProvider: AppIntentTimelineProvider {
     public typealias Entry = WorldClockEntry
     public typealias Intent = SelectCityIntent

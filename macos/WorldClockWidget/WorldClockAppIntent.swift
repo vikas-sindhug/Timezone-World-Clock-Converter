@@ -3,6 +3,7 @@ import WidgetKit
 import SwiftUI
 
 // MARK: - City App Entity for Widget Configuration
+@available(macOS 14.0, *)
 public struct CityAppEntity: AppEntity, Identifiable, Hashable {
     public let id: String
     public let name: String
@@ -41,6 +42,7 @@ public struct CityAppEntity: AppEntity, Identifiable, Hashable {
 }
 
 // MARK: - Dynamic Query for City App Entity
+@available(macOS 14.0, *)
 public struct CityEntityQuery: EntityQuery, EntityStringQuery {
     public init() {}
 
@@ -73,6 +75,7 @@ public struct CityEntityQuery: EntityQuery, EntityStringQuery {
 }
 
 // MARK: - Time Format Enum
+@available(macOS 14.0, *)
 public enum TimeFormatAppEnum: String, AppEnum {
     case twelveHour = "12-Hour"
     case twentyFourHour = "24-Hour"
@@ -90,6 +93,7 @@ public enum TimeFormatAppEnum: String, AppEnum {
 }
 
 // MARK: - Widget Configuration Intent
+@available(macOS 14.0, *)
 public struct SelectCityIntent: WidgetConfigurationIntent {
     public static var title: LocalizedStringResource = "Configure World Clock"
     public static var description: IntentDescription = IntentDescription("Choose a world city and customize clock display options.")
