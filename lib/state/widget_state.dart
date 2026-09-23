@@ -4,17 +4,27 @@ import '../data/models/world_city.dart';
 import '../data/repositories/widget_repository.dart';
 import '../services/widget_sync_service.dart';
 
+enum DesktopWidgetStatus {
+  configured,
+  prepared,
+  notConfigured,
+}
+
 class DesktopWidgetState extends ChangeNotifier {
   final WidgetRepository _repository;
 
   WidgetConfiguration _config = const WidgetConfiguration();
   bool _isInitialized = false;
+  List<Map<String, dynamic>> _configuredWidgets = [];
+  bool _isLoadingConfigured = false;
 
   DesktopWidgetState({WidgetRepository? repository})
       : _repository = repository ?? WidgetRepository();
 
   WidgetConfiguration get config => _config;
   bool get isInitialized => _isInitialized;
+  List<Map<String, dynamic>> get configuredWidgets => _configuredWidgets;
+  bool get isLoadingConfigured => _isLoadingConfigured;
 
   String? get singleCityId => _config.singleCityId;
   List<String> get multiCityIds => _config.multiCityIds;
@@ -54,6 +64,18 @@ class DesktopWidgetState extends ChangeNotifier {
 
     await _repository.saveConfiguration(_config);
     await syncWithAvailableCities(availableCities);
+    await refreshConfiguredWidgets();
+  }
+
+  /// Refreshes the list of currently installed/configured widgets from native WidgetCenter.
+  Future<void> refreshConfiguredWidgets() async {
+    _isLoadingConfigured = true;
+    notifyListeners();
+
+    final list = await WidgetSyncService.getConfiguredWidgets();
+    _configuredWidgets = list;
+    _isLoadingConfigured = false;
+    notifyListeners();
   }
 
   /// Sets the active single-city for Small and Medium widgets.
@@ -163,7 +185,29 @@ class DesktopWidgetState extends ChangeNotifier {
     await WidgetSyncService.syncToNative(
       selectedCity: selected,
       multiCities: multi,
+      allCities: availableCities,
       config: _config,
     );
+  }
+
+  /// Determines the active widget deployment status for a given city.
+  DesktopWidgetStatus getStatusForCity(String cityId, [String? timezoneId]) {
+    // Check if natively configured on macOS desktop/notification center
+    for (final widget in _configuredWidgets) {
+      final desc = (widget['description'] as String? ?? '').toLowerCase();
+      if (desc.contains(cityId.toLowerCase())) {
+        return DesktopWidgetStatus.configured;
+      }
+      if (timezoneId != null && desc.contains(timezoneId.toLowerCase())) {
+        return DesktopWidgetStatus.configured;
+      }
+    }
+
+    // Check if prepared in Flutter widget payload
+    if (_config.singleCityId == cityId || _config.multiCityIds.contains(cityId)) {
+      return DesktopWidgetStatus.prepared;
+    }
+
+    return DesktopWidgetStatus.notConfigured;
   }
 }

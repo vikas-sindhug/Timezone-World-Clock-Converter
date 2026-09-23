@@ -180,6 +180,16 @@ public struct WidgetPayload: Codable {
             longitude: -74.0060,
             isFavorite: false
         )
+        let jaipur = WidgetCityData(
+            id: "jaipur_in",
+            name: "Jaipur",
+            country: "India",
+            timezoneId: "Asia/Kolkata",
+            flagEmoji: "🇮🇳",
+            latitude: 26.9124,
+            longitude: 75.7873,
+            isFavorite: true
+        )
         let dubai = WidgetCityData(
             id: "dubai_ae",
             name: "Dubai",
@@ -190,18 +200,42 @@ public struct WidgetPayload: Codable {
             longitude: 55.2708,
             isFavorite: false
         )
+        let sanFrancisco = WidgetCityData(
+            id: "san_francisco_us",
+            name: "San Francisco",
+            country: "United States",
+            timezoneId: "America/Los_Angeles",
+            flagEmoji: "🇺🇸",
+            latitude: 37.7749,
+            longitude: -122.4194,
+            isFavorite: false
+        )
         return WidgetPayload(
             selectedCity: tokyo,
-            multiCities: [tokyo, london, newYork, dubai],
+            multiCities: [tokyo, london, newYork, jaipur, dubai, sanFrancisco],
             configuration: WidgetConfiguration.default
         )
     }()
+
+    public static let fallbackCities: [WidgetCityData] = [
+        WidgetCityData(id: "tokyo_jp", name: "Tokyo", country: "Japan", timezoneId: "Asia/Tokyo", flagEmoji: "🇯🇵", latitude: 35.6762, longitude: 139.6503, isFavorite: true),
+        WidgetCityData(id: "london_gb", name: "London", country: "United Kingdom", timezoneId: "Europe/London", flagEmoji: "🇬🇧", latitude: 51.5074, longitude: -0.1278, isFavorite: false),
+        WidgetCityData(id: "new_york_us", name: "New York", country: "United States", timezoneId: "America/New_York", flagEmoji: "🇺🇸", latitude: 40.7128, longitude: -74.0060, isFavorite: false),
+        WidgetCityData(id: "jaipur_in", name: "Jaipur", country: "India", timezoneId: "Asia/Kolkata", flagEmoji: "🇮🇳", latitude: 26.9124, longitude: 75.7873, isFavorite: true),
+        WidgetCityData(id: "dubai_ae", name: "Dubai", country: "United Arab Emirates", timezoneId: "Asia/Dubai", flagEmoji: "🇦🇪", latitude: 25.2048, longitude: 55.2708, isFavorite: false),
+        WidgetCityData(id: "san_francisco_us", name: "San Francisco", country: "United States", timezoneId: "America/Los_Angeles", flagEmoji: "🇺🇸", latitude: 37.7749, longitude: -122.4194, isFavorite: false),
+        WidgetCityData(id: "singapore_sg", name: "Singapore", country: "Singapore", timezoneId: "Asia/Singapore", flagEmoji: "🇸🇬", latitude: 1.3521, longitude: 103.8198, isFavorite: false),
+        WidgetCityData(id: "sydney_au", name: "Sydney", country: "Australia", timezoneId: "Australia/Sydney", flagEmoji: "🇦🇺", latitude: -33.8688, longitude: 151.2093, isFavorite: false),
+        WidgetCityData(id: "paris_fr", name: "Paris", country: "France", timezoneId: "Europe/Paris", flagEmoji: "🇫🇷", latitude: 48.8566, longitude: 2.3522, isFavorite: false),
+        WidgetCityData(id: "berlin_de", name: "Berlin", country: "Germany", timezoneId: "Europe/Berlin", flagEmoji: "🇩🇪", latitude: 52.5200, longitude: 13.4050, isFavorite: false),
+    ]
 }
 
-/// Helper for reading widget payload from App Group UserDefaults.
+/// Helper for reading widget payload and city list from App Group UserDefaults.
 public enum WidgetStorageHelper {
-    public static let appGroupId = "group.com.worldclock.app"
+    public static let appGroupId = "group.com.dharampal.worldclock"
     public static let payloadKey = "world_clock_widget_data"
+    public static let citiesKey = "world_clock_cities"
 
     /// Loads the shared payload from App Group UserDefaults, falling back to sample data.
     public static func loadPayload() -> WidgetPayload {
@@ -217,5 +251,33 @@ public enum WidgetStorageHelper {
         } catch {
             return WidgetPayload.sample
         }
+    }
+
+    /// Loads all available cities saved by the Flutter app for dynamic AppIntent configuration.
+    public static func loadAllCities() -> [WidgetCityData] {
+        guard let sharedDefaults = UserDefaults(suiteName: appGroupId),
+              let jsonString = sharedDefaults.string(forKey: citiesKey),
+              let data = jsonString.data(using: .utf8) else {
+            // Fallback: Check multiCities in payload or fallback cities
+            let payload = loadPayload()
+            if !payload.multiCities.isEmpty {
+                return payload.multiCities
+            }
+            return WidgetPayload.fallbackCities
+        }
+
+        do {
+            let decoder = JSONDecoder()
+            let cities = try decoder.decode([WidgetCityData].self, from: data)
+            return cities.isEmpty ? WidgetPayload.fallbackCities : cities
+        } catch {
+            return WidgetPayload.fallbackCities
+        }
+    }
+
+    /// Finds a city by its unique ID or IANA timezone ID.
+    public static func findCity(by id: String) -> WidgetCityData? {
+        let all = loadAllCities()
+        return all.first { $0.id == id || $0.timezoneId == id }
     }
 }

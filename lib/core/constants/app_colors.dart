@@ -28,6 +28,8 @@ class AppColors {
   static const Color nightIndigoMuted = Color(0x26818CF8);
   static const Color workingHoursGreen = Color(0xFF10B981);
   static const Color workingHoursGreenMuted = Color(0x2610B981);
+  static const Color success = Color(0xFF10B981);
+  static const Color successMuted = Color(0x2610B981);
   static const Color redDanger = Color(0xFFEF4444);
   static const Color redDangerMuted = Color(0x26EF4444);
   

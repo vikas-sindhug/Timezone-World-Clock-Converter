@@ -11,6 +11,7 @@ class WidgetSyncService {
   static Future<bool> syncToNative({
     required WorldCity? selectedCity,
     required List<WorldCity> multiCities,
+    List<WorldCity> allCities = const [],
     required WidgetConfiguration config,
   }) async {
     final payload = {
@@ -29,12 +30,16 @@ class WidgetSyncService {
       'updatedAt': DateTime.now().millisecondsSinceEpoch / 1000.0,
     };
 
-    final jsonString = jsonEncode(payload);
+    final citiesList = (allCities.isNotEmpty ? allCities : multiCities).map(_cityToMap).toList();
 
     // Only invoke native MethodChannel on macOS
     if (defaultTargetPlatform == TargetPlatform.macOS) {
       try {
-        final result = await _channel.invokeMethod<bool>('syncWidgetData', jsonString);
+        final args = {
+          'payload': jsonEncode(payload),
+          'cities': jsonEncode(citiesList),
+        };
+        final result = await _channel.invokeMethod<bool>('syncWidgetData', args);
         return result ?? true;
       } catch (e) {
         debugPrint('Error syncing widget data to macOS App Groups: $e');
@@ -45,6 +50,21 @@ class WidgetSyncService {
     // On Windows and other development platforms, log and return success
     debugPrint('[WidgetSyncService] Synced ${multiCities.length} cities to desktop widget payload.');
     return true;
+  }
+
+  /// Queries native macOS WidgetCenter for currently configured desktop widgets.
+  static Future<List<Map<String, dynamic>>> getConfiguredWidgets() async {
+    if (defaultTargetPlatform == TargetPlatform.macOS) {
+      try {
+        final result = await _channel.invokeListMethod<dynamic>('getConfiguredWidgets');
+        if (result != null) {
+          return result.map((item) => Map<String, dynamic>.from(item as Map)).toList();
+        }
+      } catch (e) {
+        debugPrint('Error querying WidgetCenter configurations: $e');
+      }
+    }
+    return [];
   }
 
   /// Triggers a manual timeline reload on macOS WidgetKit.

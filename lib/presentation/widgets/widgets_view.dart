@@ -12,6 +12,7 @@ import '../common/glass_container.dart';
 import 'previews/large_widget_preview.dart';
 import 'previews/medium_widget_preview.dart';
 import 'previews/small_widget_preview.dart';
+import 'add_to_desktop_guide.dart';
 import 'widget_configure_sheet.dart';
 
 /// Dedicated Widgets view managing available desktop widgets, options, and live previews.
@@ -24,6 +25,14 @@ class WidgetsView extends StatefulWidget {
 
 class _WidgetsViewState extends State<WidgetsView> {
   int _selectedPreviewTab = 0; // 0: Small, 1: Medium, 2: Large, 3: All
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DesktopWidgetState>().refreshConfiguredWidgets();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +77,12 @@ class _WidgetsViewState extends State<WidgetsView> {
                   spacing: 10,
                   runSpacing: 8,
                   children: [
+                    GlassButton(
+                      icon: const Icon(Icons.help_outline_rounded, size: 16),
+                      label: const Text('Desktop Guide'),
+                      isPrimary: false,
+                      onPressed: () => AddToDesktopGuideDialog.show(context),
+                    ),
                     GlassButton(
                       icon: const Icon(Icons.tune_rounded, size: 16),
                       label: const Text('Configure Widgets'),
@@ -240,6 +255,76 @@ class _WidgetsViewState extends State<WidgetsView> {
 
             const SizedBox(height: 24),
 
+            // Active macOS Desktop Widgets (WidgetCenter Detection)
+            if (widgetState.configuredWidgets.isNotEmpty) ...[
+              Row(
+                children: [
+                  const Icon(Icons.check_circle_outline_rounded, size: 18, color: AppColors.success),
+                  const SizedBox(width: 8),
+                  const Text('Placed on macOS Desktop', style: AppTypography.h2),
+                  const SizedBox(width: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '${widgetState.configuredWidgets.length} Active',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.success,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Live desktop widgets detected by macOS WidgetKit WidgetCenter.',
+                style: AppTypography.caption,
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 12,
+                runSpacing: 10,
+                children: widgetState.configuredWidgets.map((w) {
+                  final familyStr = ((w['family'] as String?) ?? '')
+                      .replaceAll('system', '')
+                      .toUpperCase();
+                  final cityName = (w['cityName'] as String?) ??
+                      ((w['kind'] as String?) ?? '').split('.').last;
+                  return GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    borderRadius: BorderRadius.circular(12),
+                    borderColor: AppColors.success.withValues(alpha: 0.4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.widgets_rounded, size: 16, color: AppColors.success),
+                        const SizedBox(width: 8),
+                        Text(cityName, style: AppTypography.bodyBold),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.glassSurface,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            familyStr,
+                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+            ],
+
             // Available Clocks List for Desktop Widgets
             Row(
               children: [
@@ -310,20 +395,43 @@ class _WidgetsViewState extends State<WidgetsView> {
                                   Text(city.name, style: AppTypography.bodyBold),
                                   const SizedBox(width: 6),
                                   Text('• ${city.country}', style: AppTypography.caption),
-                                  if (isPrimary) ...[
-                                    const SizedBox(width: 8),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.accent,
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: const Text(
-                                        'PRIMARY WIDGET',
-                                        style: TextStyle(fontSize: 8, fontWeight: FontWeight.w700, color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
+                                  Builder(
+                                    builder: (context) {
+                                      final status = widgetState.getStatusForCity(city.id, city.timezoneId);
+                                      if (status == DesktopWidgetStatus.configured) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(left: 8),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.success,
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: const Text(
+                                              'ON DESKTOP',
+                                              style: TextStyle(fontSize: 8, fontWeight: FontWeight.w700, color: Colors.white),
+                                            ),
+                                          ),
+                                        );
+                                      } else if (isPrimary) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(left: 8),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.accent,
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: const Text(
+                                              'PRIMARY WIDGET',
+                                              style: TextStyle(fontSize: 8, fontWeight: FontWeight.w700, color: Colors.white),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      return const SizedBox.shrink();
+                                    },
+                                  ),
                                   if (isMulti) ...[
                                     const SizedBox(width: 6),
                                     Container(

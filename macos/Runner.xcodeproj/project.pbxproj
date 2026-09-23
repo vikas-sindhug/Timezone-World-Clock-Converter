@@ -26,9 +26,11 @@
 		98C7A0222C9B000000000001 /* WidgetViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98C7A0122C9B000000000001 /* WidgetViews.swift */; };
 		98C7A0232C9B000000000001 /* WidgetDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98C7A0132C9B000000000001 /* WidgetDataModel.swift */; };
 		98C7A0242C9B000000000001 /* WidgetTimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98C7A0142C9B000000000001 /* WidgetTimelineProvider.swift */; };
+		98C7A0272C9B000000000001 /* WorldClockAppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98C7A0172C9B000000000001 /* WorldClockAppIntent.swift */; };
 		98C7A0252C9B000000000001 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98C7A0302C9B000000000001 /* WidgetKit.framework */; };
 		98C7A0262C9B000000000001 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98C7A0312C9B000000000001 /* SwiftUI.framework */; };
-		98C7A0612C9B000000000001 /* WorldClockWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 98C7A0022C9B000000000001 /* WorldClockWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		98C7A0282C9B000000000001 /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98C7A0322C9B000000000001 /* AppIntents.framework */; };
+		98C7A0612C9B000000000001 /* WorldClockWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 98C7A0022C9B000000000001 /* WorldClockWidget.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		331C80D8294CF71000263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C80D7294CF71000263BE5 /* RunnerTests.swift */; };
 		335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */; };
 		33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC10F02044A3C60003C045 /* AppDelegate.swift */; };
@@ -62,15 +64,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		98C7A0602C9B000000000001 /* Embed Foundation Extensions */ = {
+		98C7A0602C9B000000000001 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				98C7A0612C9B000000000001 /* WorldClockWidget.appex in Embed Foundation Extensions */,
+				98C7A0612C9B000000000001 /* WorldClockWidget.appex in Embed App Extensions */,
 			);
-			name = "Embed Foundation Extensions";
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		33CC110E2044A8840003C045 /* Bundle Framework */ = {
@@ -92,10 +94,12 @@
 		98C7A0122C9B000000000001 /* WidgetViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetViews.swift; sourceTree = "<group>"; };
 		98C7A0132C9B000000000001 /* WidgetDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataModel.swift; sourceTree = "<group>"; };
 		98C7A0142C9B000000000001 /* WidgetTimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTimelineProvider.swift; sourceTree = "<group>"; };
+		98C7A0172C9B000000000001 /* WorldClockAppIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldClockAppIntent.swift; sourceTree = "<group>"; };
 		98C7A0152C9B000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		98C7A0162C9B000000000001 /* WorldClockWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WorldClockWidget.entitlements; sourceTree = "<group>"; };
 		98C7A0302C9B000000000001 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		98C7A0312C9B000000000001 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		98C7A0322C9B000000000001 /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
 		331C80D5294CF71000263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		331C80D7294CF71000263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		333000ED22D3DE5D00554162 /* Warnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Warnings.xcconfig; sourceTree = "<group>"; };
@@ -123,6 +127,7 @@
 			files = (
 				98C7A0252C9B000000000001 /* WidgetKit.framework in Frameworks */,
 				98C7A0262C9B000000000001 /* SwiftUI.framework in Frameworks */,
+				98C7A0282C9B000000000001 /* AppIntents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,6 +229,7 @@
 			children = (
 				98C7A0302C9B000000000001 /* WidgetKit.framework */,
 				98C7A0312C9B000000000001 /* SwiftUI.framework */,
+				98C7A0322C9B000000000001 /* AppIntents.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -236,6 +242,7 @@
 				98C7A0122C9B000000000001 /* WidgetViews.swift */,
 				98C7A0132C9B000000000001 /* WidgetDataModel.swift */,
 				98C7A0142C9B000000000001 /* WidgetTimelineProvider.swift */,
+				98C7A0172C9B000000000001 /* WorldClockAppIntent.swift */,
 				98C7A0152C9B000000000001 /* Info.plist */,
 				98C7A0162C9B000000000001 /* WorldClockWidget.entitlements */,
 			);
@@ -272,7 +279,7 @@
 				33CC10EB2044A3C60003C045 /* Resources */,
 				33CC110E2044A8840003C045 /* Bundle Framework */,
 				3399D490228B24CF009A79C7 /* ShellScript */,
-				98C7A0602C9B000000000001 /* Embed Foundation Extensions */,
+				98C7A0602C9B000000000001 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
@@ -448,6 +455,7 @@
 				98C7A0222C9B000000000001 /* WidgetViews.swift in Sources */,
 				98C7A0232C9B000000000001 /* WidgetDataModel.swift in Sources */,
 				98C7A0242C9B000000000001 /* WidgetTimelineProvider.swift in Sources */,
+				98C7A0272C9B000000000001 /* WorldClockAppIntent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

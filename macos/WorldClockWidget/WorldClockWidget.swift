@@ -1,66 +1,44 @@
 import WidgetKit
 import SwiftUI
+import AppIntents
 
-/// Single City Desktop Widget (Small and Medium sizes)
-public struct WorldClockSingleWidget: Widget {
-    public let kind: String = "com.worldclock.single_widget"
+/// Primary WorldClock Desktop Widget supporting Small, Medium, and Large sizes with AppIntent configuration
+public struct WorldClockWidget: Widget {
+    public static let kind: String = "com.dharampal.worldclock.widget"
 
     public init() {}
 
     public var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WorldClockTimelineProvider()) { entry in
+        AppIntentConfiguration(
+            kind: Self.kind,
+            intent: SelectCityIntent.self,
+            provider: WorldClockAppIntentTimelineProvider()
+        ) { entry in
             SingleWidgetEntryView(entry: entry)
                 .glassWidgetBackground()
         }
-        .configurationDisplayName("World Clock")
-        .description("Track the live time and solar status of your favorite global city.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .configurationDisplayName("WorldClock")
+        .description("World Clock and timezone information directly on your Mac desktop.")
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
 
-/// View switcher for Single City Widget based on widget family.
-struct SingleWidgetEntryView: View {
-    @Environment(\.widgetFamily) var family
-    let entry: WorldClockEntry
-
-    var body: some View {
-        let city = entry.payload.selectedCity ?? entry.payload.multiCities.first ?? WidgetPayload.sample.selectedCity!
-        let config = entry.payload.configuration
-
-        switch family {
-        case .systemSmall:
-            SmallWidgetView(city: city, config: config, date: entry.date)
-        case .systemMedium:
-            MediumWidgetView(city: city, config: config, date: entry.date)
-        default:
-            SmallWidgetView(city: city, config: config, date: entry.date)
-        }
-    }
-}
-
-/// Multi-City Desktop Widget (Large size)
-public struct WorldClockMultiWidget: Widget {
-    public let kind: String = "com.worldclock.multi_widget"
+/// Multi-City Desktop Widget (Large size) for quick multi-clock comparison
+public struct WorldClockMultiCityWidget: Widget {
+    public static let kind: String = "com.dharampal.worldclock.multi_widget"
 
     public init() {}
 
     public var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WorldClockTimelineProvider()) { entry in
+        StaticConfiguration(
+            kind: Self.kind,
+            provider: WorldClockMultiCityTimelineProvider()
+        ) { entry in
             MultiWidgetEntryView(entry: entry)
                 .glassWidgetBackground()
         }
-        .configurationDisplayName("World Clock (Multi-City)")
-        .description("Compare live times across multiple global cities simultaneously.")
+        .configurationDisplayName("WorldClock (Multi-City)")
+        .description("Compare live times across multiple global cities simultaneously on your desktop.")
         .supportedFamilies([.systemLarge])
-    }
-}
-
-/// View for Multi-City Widget.
-struct MultiWidgetEntryView: View {
-    let entry: WorldClockEntry
-
-    var body: some View {
-        let cities = entry.payload.multiCities.isEmpty ? WidgetPayload.sample.multiCities : entry.payload.multiCities
-        LargeWidgetView(cities: cities, config: entry.payload.configuration, date: entry.date)
     }
 }

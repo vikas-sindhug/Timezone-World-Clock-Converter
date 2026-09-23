@@ -8,7 +8,7 @@ import '../../data/models/clock_card_data.dart';
 import '../../state/clock_state.dart';
 import '../../state/widget_state.dart';
 import '../common/glass_container.dart';
-import '../widgets/widget_configure_sheet.dart';
+import '../widgets/add_to_desktop_guide.dart';
 import 'analog_clock_view.dart';
 
 class ClockCard extends StatefulWidget {
@@ -177,21 +177,41 @@ class _ClockCardState extends State<ClockCard> with SingleTickerProviderStateMix
                       Builder(
                         builder: (context) {
                           final widgetState = context.watch<DesktopWidgetState?>();
-                          final isWidgetActive = widgetState?.singleCityId == data.city.id;
+                          final status = widgetState?.getStatusForCity(
+                                data.city.id,
+                                data.city.timezoneId,
+                              ) ??
+                              DesktopWidgetStatus.notConfigured;
+                          final isConfigured =
+                              status == DesktopWidgetStatus.configured;
+                          final isPrepared =
+                              status == DesktopWidgetStatus.prepared;
+
+                          final Color iconColor;
+                          final IconData iconData;
+                          final String tooltipText;
+
+                          if (isConfigured) {
+                            iconColor = AppColors.success;
+                            iconData = Icons.widgets_rounded;
+                            tooltipText = '${data.city.name} placed on macOS Desktop';
+                          } else if (isPrepared) {
+                            iconColor = AppColors.accentLight;
+                            iconData = Icons.widgets_rounded;
+                            tooltipText = '${data.city.name} prepared for macOS Desktop Widget';
+                          } else {
+                            iconColor = AppColors.textMuted;
+                            iconData = Icons.widgets_outlined;
+                            tooltipText = 'Add ${data.city.name} Widget';
+                          }
 
                           return IconButton(
                             icon: Icon(
-                              isWidgetActive
-                                  ? Icons.widgets_rounded
-                                  : Icons.widgets_outlined,
+                              iconData,
                               size: 18,
-                              color: isWidgetActive
-                                  ? AppColors.accentLight
-                                  : AppColors.textMuted,
+                              color: iconColor,
                             ),
-                            tooltip: isWidgetActive
-                                ? 'Active Desktop Widget'
-                                : 'Add Widget',
+                            tooltip: tooltipText,
                             splashRadius: 18,
                             hoverColor: AppColors.glassSurfaceHover,
                             onPressed: () async {
@@ -203,12 +223,15 @@ class _ClockCardState extends State<ClockCard> with SingleTickerProviderStateMix
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                          '${data.city.name} prepared for macOS Desktop Widget'),
-                                      duration: const Duration(seconds: 2),
+                                          '${data.city.name} widget is ready.'),
+                                      duration: const Duration(seconds: 4),
                                       action: SnackBarAction(
-                                        label: 'Configure',
+                                        label: 'Add to Desktop',
                                         onPressed: () {
-                                          WidgetConfigureSheet.show(context);
+                                          AddToDesktopGuideDialog.show(
+                                            context,
+                                            cityName: data.city.name,
+                                          );
                                         },
                                       ),
                                     ),

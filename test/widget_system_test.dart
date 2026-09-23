@@ -133,6 +133,31 @@ void main() {
       await state.toggleMultiCity(cities[4].id, cities);
       expect(state.multiCityIds.length, 2);
     });
+
+    test('DesktopWidgetStatus accurately computes prepared vs configured status', () async {
+      final cities = [
+        CityDatabase.findById('tokyo_jp')!,
+        CityDatabase.findById('london_gb')!,
+      ];
+
+      final state = DesktopWidgetState();
+      await state.initialize(cities);
+
+      // Default primary city is tokyo_jp, london_gb is in multiCityIds
+      expect(
+        state.getStatusForCity('tokyo_jp', 'Asia/Tokyo'),
+        DesktopWidgetStatus.prepared,
+      );
+      expect(
+        state.getStatusForCity('london_gb', 'Europe/London'),
+        DesktopWidgetStatus.prepared,
+      );
+      // City not in single or multi is not configured
+      expect(
+        state.getStatusForCity('sydney_au', 'Australia/Sydney'),
+        DesktopWidgetStatus.notConfigured,
+      );
+    });
   });
 
   group('WidgetKit Previews Zero-Overflow Tests', () {
